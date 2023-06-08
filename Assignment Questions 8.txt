@@ -1,0 +1,136 @@
+Assignment Questions 8
+
+
+ **Question 1**
+
+Given two strings s1 and s2, return *the lowest **ASCII** sum of deleted characters to make two strings equal*.
+
+Answer-
+
+Code
+
+class Solution(object):
+    def minimumDeleteSum(self, s1, s2):
+        dp = [[0] * (len(s2) + 1) for _ in xrange(len(s1) + 1)]
+
+        for i in xrange(len(s1) - 1, -1, -1):
+            dp[i][len(s2)] = dp[i+1][len(s2)] + ord(s1[i])
+        for j in xrange(len(s2) - 1, -1, -1):
+            dp[len(s1)][j] = dp[len(s1)][j+1] + ord(s2[j])
+
+        for i in xrange(len(s1) - 1, -1, -1):
+            for j in xrange(len(s2) - 1, -1, -1):
+                if s1[i] == s2[j]:
+                    dp[i][j] = dp[i+1][j+1]
+                else:
+                    dp[i][j] = min(dp[i+1][j] + ord(s1[i]),
+                                   dp[i][j+1] + ord(s2[j]))
+
+        return dp[0][0]
+
+
+ **Question 2**
+
+Given a string s containing only three types of characters: '(', ')' and '*', return true *if* s *is **valid***.
+
+The following rules define a **valid** string:
+
+- Any left parenthesis '(' must have a corresponding right parenthesis ')'.
+- Any right parenthesis ')' must have a corresponding left parenthesis '('.
+- Left parenthesis '(' must go before the corresponding right parenthesis ')'.
+- '*' could be treated as a single right parenthesis ')' or a single left parenthesis '(' or an empty string "".
+
+Answer-
+
+class Solution {
+public:
+    bool checkValidString(string s) {
+        int open_count = 0, close_count =0;
+        int len= s.length()-1;
+        for(int i=0;i<=len;i++)
+        {
+            if(s[i] == '(' || s[i] == '*')
+                open_count ++;
+            else 
+                open_count --;
+            if(s[len-i] == ')' || s[len-i] == '*')
+                close_count ++;
+            else
+                close_count --;
+            if(open_count < 0 || close_count <0)
+                return false;
+        }
+        return true;
+    }
+};
+
+ **Question 3**
+
+Given two strings word1 and word2, return *the minimum number of **steps** required to make* word1 *and* word2 *the same*.
+
+In one **step**, you can delete exactly one character in either string.
+
+Answer-
+
+class Solution:
+    def minDistance(self, W1: str, W2: str) -> int:
+        m, n = len(W1), len(W2)
+        if m < n: W1, W2, m, n = W2, W1, n, m
+        dpLast, dpCurr = [0] * (n + 1), [0] * (n + 1)
+        for c1 in W1:
+            for j in range(n):
+                dpCurr[j+1] = dpLast[j] + 1 if c1 == W2[j] else max(dpCurr[j], dpLast[j+1])
+            dpLast, dpCurr = dpCurr, dpLast
+        return m + n - 2 * dpLast[n]
+
+
+
+ **Question 6**
+
+Given two strings s and p, return *an array of all the start indices of* p*'s anagrams in* s. You may return the answer in **any order**.
+
+An **Anagram** is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.
+
+Answer-
+
+Code
+
+class Solution(object):
+    def findAnagrams(self, s, p):
+        res = []
+        c = collections.Counter(p)
+        cur = collections.Counter(s[:len(p)])
+        for i in range(len(s)-len(p)+1):
+            if cur==c:
+                res.append(i)
+            if i == len(s)-len(p):
+                break
+            cur[s[i]]-=1
+            if cur[s[i]]==0:
+                del cur[s[i]]
+            cur[s[i+len(p)]]+=1
+        return res
+
+Question 8
+
+Given two strings s and goal, return true *if you can swap two letters in* s *so the result is equal to* goal*, otherwise, return* false*.*
+
+Swapping letters is defined as taking two indices i and j (0-indexed) such that i != j and swapping the characters at s[i] and s[j].
+
+- For example, swapping at indices 0 and 2 in "abcd" results in "cbad".
+
+Answer-
+
+Code
+
+class Solution:
+    def buddyStrings(self, s: str, goal: str) -> bool:
+        m, n = len(s), len(goal)
+        if m != n:
+            return False
+        cnt1, cnt2 = Counter(s), Counter(goal)
+        if cnt1 != cnt2:
+            return False
+        diff = sum(s[i] != goal[i] for i in range(n))
+        return diff == 2 or (diff == 0 and any(v > 1 for v in cnt1.values()))
+
